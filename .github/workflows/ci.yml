@@ -1,0 +1,14 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  secrets:
+    uses: ageister81-lab/niin-ci/.github/workflows/secrets.yml@main
+    permissions:
+      contents: read

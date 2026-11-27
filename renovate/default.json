@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate preset for Niin repos (security.md §9). Use: \"extends\": [\"github>ageister81-lab/niin-ci//renovate/default\"]",
+  "extends": ["config:recommended", ":semanticCommits", "helpers:pinGitHubActionDigests", "docker:pinDigests"],
+  "minimumReleaseAge": "3 days",
+  "rangeStrategy": "pin",
+  "vulnerabilityAlerts": { "enabled": true, "minimumReleaseAge": null, "labels": ["security"] },
+  "packageRules": [
+    {
+      "description": "Group non-major dev tooling",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "dev tooling"
+    },
+    {
+      "description": "Keep NestJS packages in lockstep",
+      "matchPackageNames": ["@nestjs/{/,}**"],
+      "groupName": "nestjs"
+    },
+    {
+      "description": "Keep Next.js and React together",
+      "matchPackageNames": ["next", "react", "react-dom", "@types/react", "@types/react-dom", "@next/{/,}**"],
+      "groupName": "next and react"
+    },
+    {
+      "description": "typescript-eslint caps the TypeScript version; review TS majors by hand",
+      "matchPackageNames": ["typescript"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
+}
