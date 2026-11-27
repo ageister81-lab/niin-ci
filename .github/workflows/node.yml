@@ -14,6 +14,10 @@ on:
         description: Start a Postgres 17 service for database tests (RLS suites run against a real database)
         type: boolean
         default: false
+      redis:
+        description: Start a Redis 7 service for tests that use sessions, challenges or rate limits
+        type: boolean
+        default: false
       codeql:
         description: >-
           Run CodeQL. Needs code scanning: public repos, or GitHub Advanced Security on private ones.
@@ -41,10 +45,16 @@ jobs:
         ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U niin_admin" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: ${{ inputs.redis && 'redis:7.4-alpine' || '' }}
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       TEST_PGHOST: 127.0.0.1
       TEST_PG_ADMIN_USER: niin_admin
       TEST_PG_ADMIN_PASSWORD: ci-only
+      TEST_REDIS_URL: redis://127.0.0.1:6379
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
