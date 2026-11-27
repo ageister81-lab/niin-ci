@@ -17,7 +17,9 @@ on:
         type: boolean
         default: false
 
-permissions: read-all
+# Deny by default: a called workflow may not ask for more than its caller grants, and each job
+# below requests only what it needs (security.md §9).
+permissions: {}
 
 jobs:
   check:
