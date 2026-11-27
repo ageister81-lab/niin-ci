@@ -10,6 +10,10 @@ on:
         description: Build the Dockerfile and scan the image
         type: boolean
         default: false
+      postgres:
+        description: Start a Postgres 17 service for database tests (RLS suites run against a real database)
+        type: boolean
+        default: false
       codeql:
         description: >-
           Run CodeQL. Needs code scanning: public repos, or GitHub Advanced Security on private ones.
@@ -27,6 +31,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    services:
+      postgres:
+        # An empty image skips the service when the caller doesn't ask for it.
+        image: ${{ inputs.postgres && 'postgres:17-alpine' || '' }}
+        env:
+          POSTGRES_USER: niin_admin
+          POSTGRES_PASSWORD: ci-only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U niin_admin" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_PGHOST: 127.0.0.1
+      TEST_PG_ADMIN_USER: niin_admin
+      TEST_PG_ADMIN_PASSWORD: ci-only
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
